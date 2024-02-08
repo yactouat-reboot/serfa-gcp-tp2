@@ -4,6 +4,14 @@
 
 `docker run -e BUCKET_NAME=my-bucket IMAGE_NAME URL`
 
+### TODOS
+
+1. Copy service account key into container locally, but without versioning it on git (.gitignore)
+2. Build and run the application
+3. Do whatever necessary to upload the image with the container on the cloud bucket
+  - role and permissions for the service account
+  - create a bucket
+
 ## Official docs
 
 Create a Cloud Run job to take screenshots of web pages.
