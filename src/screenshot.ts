@@ -82,6 +82,7 @@ async function main(urls: string[]) {
   console.log("Upload complete!");
 }
 
+// npm run start URL
 main(process.argv.slice(2)).catch((err) => {
   console.error(JSON.stringify({ severity: "ERROR", message: err.message }));
   process.exit(1);
