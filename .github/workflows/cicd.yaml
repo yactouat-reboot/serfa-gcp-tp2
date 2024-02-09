@@ -1,0 +1,33 @@
+name: 4.3 module example 2 CICD pipeline
+
+# ici vous avez le déclencheur de votre pipeline;
+# contrairement à Google Cloud Build, vous pouvez le configurer d'ici
+on:
+  push:
+    branches: ["main"]
+
+# les "jobs" sont les étapes de votre pipeline
+jobs:
+
+    # CONTINUOUS DEPLOYMENT
+    push-image-to-gar:
+      runs-on: ubuntu-latest
+      # permet d'éviter les race conditions
+      steps:
+        - uses: actions/checkout@v4
+        - name: se login au Google Artifact Registry
+          uses: docker/login-action@v3
+          with:
+            registry: europe-west1-docker.pkg.dev
+            username: _json_key
+            password: ${{ secrets.CLOUD_RUN_DEPLOYER_SA_KEY }}
+        - id: docker-push-tagged
+          name: Tag Docker image and push to Google Artifact Registry
+          uses: docker/build-push-action@v5
+          with:
+            file: ./prod.Dockerfile
+            context: .
+            push: true
+            tags: |
+             europe-west1-docker.pkg.dev/serfa-gcp/serfa-gcp-tp/serfagcp2:latest
+             europe-west1-docker.pkg.dev/serfa-gcp/serfa-gcp-tp/serfagcp2:${{ github.sha }}
