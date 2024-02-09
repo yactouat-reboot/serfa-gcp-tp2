@@ -31,3 +31,23 @@ jobs:
             tags: |
              europe-west1-docker.pkg.dev/serfa-gcp/serfa-gcp-tp/serfagcp2:latest
              europe-west1-docker.pkg.dev/serfa-gcp/serfa-gcp-tp/serfagcp2:${{ github.sha }}
+
+    # CONTINUOUS DEPLOYMENT
+    deploy-to-cloud-run:
+        runs-on: ubuntu-latest
+        # permet d'éviter les race conditions
+        needs: push-image-to-gar
+        steps:
+          # cette action me permet de me connecter au GCP en utilisant ma JSON key
+          - uses: 'google-github-actions/auth@v2'
+            with:
+              credentials_json: '${{ secrets.CLOUD_RUN_DEPLOYER_SA_KEY }}'
+  
+            # on install le logiciel en ligne de commande `gcloud` sur le runner de GitHub
+          - name: "set up Google Cloud SDK"
+            uses: "google-github-actions/setup-gcloud@v2"
+
+          # j'utilise `gcloud` pour déployer mon job Cloud Run
+          - name: "update Cloud Run job"
+            run: |
+             gcloud run jobs deploy screenshotter --image=europe-west1-docker.pkg.dev/serfa-gcp/serfa-gcp-tp/serfagcp2:latest --region=europe-west1
